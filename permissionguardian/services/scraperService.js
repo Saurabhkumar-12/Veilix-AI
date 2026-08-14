@@ -1,4 +1,6 @@
-const gplay = require('google-play-scraper');
+const rawGplay = require('google-play-scraper');
+const gplay = rawGplay.default || rawGplay;
+
 
 // Built-in fallback data for popular demo apps for instant sub-second response times
 const DEMO_FALLBACK_APPS = {
