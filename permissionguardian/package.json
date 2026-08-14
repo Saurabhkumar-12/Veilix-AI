@@ -1,0 +1,30 @@
+{
+  "name": "permission-guardian-ai",
+  "version": "2.0.0",
+  "description": "PermissionGuardian AI - Medium Version Android Privacy Intelligence Platform.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "node server.js",
+    "frontend": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run frontend\"",
+    "test": "node backend/risk-engine/testEngine.js && node backend/risk-engine/privacyAnalysis.test.js && node backend/risk-engine/apkSecurity.test.js && node backend/risk-engine/permissionRecommendation.test.js && node backend/risk-engine/regressionTests.js && node backend/risk-engine/assistant.test.js",
+    "build": "npm --prefix frontend run build"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.7.9",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "google-play-scraper": "^9.1.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "license": "MIT"
+}
