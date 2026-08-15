@@ -51,14 +51,16 @@ function download(url, destPath) {
 
 async function run() {
   console.log('Downloading fonts for local self-hosting...');
-  for (const font of fonts) {
-    const destPath = path.join(fontsDir, font.dest);
-    try {
-      await download(font.url, destPath);
-    } catch (err) {
-      console.error(`Error downloading ${font.dest}:`, err.message);
-    }
-  }
+  await Promise.all(
+    fonts.map(async (font) => {
+      const destPath = path.join(fontsDir, font.dest);
+      try {
+        await download(font.url, destPath);
+      } catch (err) {
+        console.error(`Error downloading ${font.dest}:`, err.message);
+      }
+    })
+  );
   console.log('Fonts downloaded successfully!');
 }
 
