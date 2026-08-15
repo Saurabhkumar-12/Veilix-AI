@@ -109,9 +109,9 @@ export default function TimeMachineModal({ isOpen, onClose }) {
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               <div className="flex flex-wrap gap-2 text-xs">
                 <span className="text-slate-400 font-bold">Presets:</span>
-                {PRESET_VERSIONS.map((preset, idx) => (
+                {PRESET_VERSIONS.map((preset) => (
                   <button
-                    key={idx}
+                    key={preset.label}
                     onClick={() => {
                       setOldInput(preset.oldUrl);
                       setNewInput(preset.newUrl);
@@ -194,8 +194,8 @@ export default function TimeMachineModal({ isOpen, onClose }) {
                     Version 2.0 introduced high-sensitivity permissions that were not present in Version 1.0:
                   </p>
                   <div className="flex flex-wrap gap-2 pt-1">
-                    {comparison.newSensitivePermissions.map((sp, idx) => (
-                      <span key={idx} className="px-3 py-1 rounded-lg bg-rose-900 text-white font-mono text-xs font-bold border border-rose-800">
+                    {comparison.newSensitivePermissions.map((sp) => (
+                      <span key={sp.label} className="px-3 py-1 rounded-lg bg-rose-900 text-white font-mono text-xs font-bold border border-rose-800">
                         ⚠️ {sp.label}
                       </span>
                     ))}
@@ -226,8 +226,8 @@ export default function TimeMachineModal({ isOpen, onClose }) {
                 </h3>
 
                 <div className="relative pl-6 border-l-2 border-slate-800 space-y-6">
-                  {comparison.timeline.map((tl, idx) => (
-                    <div key={idx} className="relative">
+                  {comparison.timeline.map((tl) => (
+                    <div key={tl.version} className="relative">
                       <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-green-500 border-2 border-slate-950"></span>
                       <div className="bg-[#090d16] p-4 rounded-xl border border-slate-800">
                         <div className="flex justify-between items-center mb-1">
@@ -265,8 +265,8 @@ export default function TimeMachineModal({ isOpen, onClose }) {
                     <p className="text-xs text-slate-500 italic">No new permissions added.</p>
                   ) : (
                     <ul className="space-y-1.5 text-xs text-slate-300 font-mono">
-                      {comparison.addedPermissions.map((p, idx) => (
-                        <li key={idx} className="flex items-center gap-1.5 font-bold">
+                      {comparison.addedPermissions.map((p) => (
+                        <li key={p.label} className="flex items-center gap-1.5 font-bold">
                           <span>🆕</span>
                           <span>{p.label}</span>
                         </li>
@@ -287,8 +287,8 @@ export default function TimeMachineModal({ isOpen, onClose }) {
                     <p className="text-xs text-slate-500 italic">No permissions removed.</p>
                   ) : (
                     <ul className="space-y-1.5 text-xs text-slate-400 font-mono">
-                      {comparison.removedPermissions.map((p, idx) => (
-                        <li key={idx} className="flex items-center gap-1.5 font-bold line-through">
+                      {comparison.removedPermissions.map((p) => (
+                        <li key={p.label} className="flex items-center gap-1.5 font-bold line-through">
                           <span>➖</span>
                           <span>{p.label}</span>
                         </li>
@@ -309,8 +309,8 @@ export default function TimeMachineModal({ isOpen, onClose }) {
                     <p className="text-xs text-slate-500 italic">No unchanged permissions.</p>
                   ) : (
                     <ul className="space-y-1.5 text-xs text-slate-400 font-mono">
-                      {comparison.unchangedPermissions.map((p, idx) => (
-                        <li key={idx} className="flex items-center gap-1.5">
+                      {comparison.unchangedPermissions.map((p) => (
+                        <li key={p.label} className="flex items-center gap-1.5">
                           <span className="text-green-500">✓</span>
                           <span>{p.label}</span>
                         </li>

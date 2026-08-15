@@ -132,8 +132,8 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
               </h3>
 
               <div className="space-y-3">
-                {chartData.map((item, idx) => (
-                  <div key={idx} className="space-y-1">
+                {chartData.map((item) => (
+                  <div key={item.permission} className="space-y-1">
                     <div className="flex justify-between text-xs font-medium text-slate-300">
                       <span className="font-bold">{item.permission}</span>
                       <span className="font-mono font-bold">{item.impactScore} / 100 ({item.severity})</span>
@@ -158,8 +158,8 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
               </h3>
               
               <div className="space-y-3">
-                {scenarios.slice(0, 4).map((sc, idx) => (
-                  <div key={idx} className="p-3.5 rounded-xl bg-[#03060c] border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono">
+                {scenarios.slice(0, 4).map((sc) => (
+                  <div key={`${sc.appName}-${sc.permission}`} className="p-3.5 rounded-xl bg-[#03060c] border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono">
                     <span className="font-bold text-green-400 shrink-0">{sc.appName}</span>
                     <ArrowRight className="w-3.5 h-3.5 text-slate-500 hidden sm:block" />
                     <span className="text-amber-300 font-bold bg-slate-900 px-2.5 py-1 rounded border border-slate-700">{sc.permission}</span>
@@ -182,8 +182,8 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
             </h3>
 
             <div className="grid grid-cols-1 gap-4">
-              {impacts.map((imp, idx) => (
-                <div key={idx} className="p-4 rounded-xl border border-slate-800 bg-[#03060c] hover:bg-[#070b14] transition-colors space-y-2">
+              {impacts.map((imp) => (
+                <div key={imp.permission} className="p-4 rounded-xl border border-slate-800 bg-[#03060c] hover:bg-[#070b14] transition-colors space-y-2">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2">
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />

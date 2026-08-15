@@ -296,8 +296,8 @@ function PermissionCard({ item, variant, deniedSet = new Set(), onToggle }) {
         <div style={{ color: '#94A3B8', fontWeight: 'bold', fontSize: '0.6rem', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Evidence</div>
         {hasEvidence ? (
           <ul style={{ margin: 0, paddingLeft: '1rem', listStyleType: 'disc', color: '#E2E8F0' }}>
-            {item.evidence.map((e, idx) => (
-              <li key={idx} style={{ marginTop: '0.15rem' }}>{e}</li>
+            {item.evidence.map((e) => (
+              <li key={e} style={{ marginTop: '0.15rem' }}>{e}</li>
             ))}
           </ul>
         ) : (
@@ -346,9 +346,9 @@ function PermissionCard({ item, variant, deniedSet = new Set(), onToggle }) {
       {/* Verified sources — backend-constructed real URLs only, never AI-generated */}
       {hasSources && !isDenied && (
         <div className="perm-card-v2__sources" style={{ marginTop: '0.6rem' }}>
-          {item.sources.map((src, i) => (
+          {item.sources.map((src) => (
             <a
-              key={i}
+              key={src.url}
               href={src.url}
               target="_blank"
               rel="noopener noreferrer"
@@ -444,12 +444,19 @@ function highlightText(text, permissions = []) {
   const regex = new RegExp(`\\b(${escaped.join('|')})\\b`, 'gi');
 
   const parts = text.split(regex);
-  return parts.map((part, i) => {
+  let offset = 0;
+  const tokenized = parts.map(part => {
+    const key = `${offset}-${part}`;
+    offset += part.length;
+    return { key, part };
+  });
+
+  return tokenized.map(({ key, part }) => {
     const isMatch = sortedTerms.some(t => t === part.toLowerCase());
     if (isMatch) {
       return (
         <span 
-          key={i} 
+          key={key} 
           className="px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 font-bold border border-green-500/20 text-[11px] font-mono whitespace-nowrap"
           title={`Analyzed Permission: ${part}`}
         >
@@ -490,7 +497,7 @@ function AIAssistant({ data, onUpdateData }) {
     // Detect URL
     const isUrl = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?(\?.*)?$/.test(value) || value.includes('play.google.com') || value.includes('id=');
     if (isUrl) {
-      setMessages(prev => [...prev, { role: 'user', text: value }]);
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', text: value }]);
       setQuestion('');
       setBusy(true);
       try {
@@ -501,24 +508,24 @@ function AIAssistant({ data, onUpdateData }) {
           newReport = await analyzeApplicationUrl(value, false);
         }
         onUpdateData(newReport);
-        setMessages(prev => [...prev, { role: 'assistant', text: "I've updated the analysis for this application." }]);
+        setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: "I've updated the analysis for this application." }]);
       } catch (err) {
-        setMessages(prev => [...prev, { role: 'assistant', text: `Failed to analyze URL: ${err.message}`, error: true }]);
+        setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: `Failed to analyze URL: ${err.message}`, error: true }]);
       } finally {
         setBusy(false);
       }
       return;
     }
 
-    setMessages(prev => [...prev, { role: 'user', text: value }]);
+    setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'user', text: value }]);
     setQuestion('');
     setBusy(true);
     try {
       const historyPayload = messages.map(m => ({ role: m.role, text: m.text }));
       const res = await askSecurityAssistant(analysisId, value, historyPayload);
-      setMessages(prev => [...prev, { role: 'assistant', text: res.answer }]);
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: res.answer }]);
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', text: err.message, error: true }]);
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'assistant', text: err.message, error: true }]);
     } finally {
       setBusy(false);
     }
@@ -555,8 +562,8 @@ function AIAssistant({ data, onUpdateData }) {
       {/* Chat window */}
       {messages.length > 0 && (
         <div className="ai-assistant__chat">
-          {messages.map((msg, i) => (
-            <div key={i} className={`ai-assistant__msg ai-assistant__msg--${msg.role}${msg.error ? ' ai-assistant__msg--error' : ''}`}>
+          {messages.map((msg) => (
+            <div key={msg.id} className={`ai-assistant__msg ai-assistant__msg--${msg.role}${msg.error ? ' ai-assistant__msg--error' : ''}`}>
               {msg.role === 'assistant' && (
                 <span className="ai-assistant__avatar">
                   <Bot className="ai-assistant__avatar-icon" />
