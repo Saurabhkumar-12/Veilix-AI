@@ -3,6 +3,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://veilix-ai.onrender.com/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
