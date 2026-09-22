@@ -229,3 +229,13 @@ export async function resetPasswordApi(email, token, newPassword, confirmPasswor
     throw new Error(error.message || 'Unable to complete request.');
   }
 }
+
+export async function getAuthConfigApi() {
+  try {
+    const response = await apiClient.get('/auth/config');
+    return response.data || {};
+  } catch (err) {
+    return { googleClientId: '' };
+  }
+}
+

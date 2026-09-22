@@ -511,6 +511,21 @@ async function googleAuth(req, res) {
   }
 }
 
+/**
+ * GET /api/auth/config
+ * Returns public authentication configuration (Google OAuth Client ID)
+ * dynamically from backend to keep frontend build private and eliminate public framework prefix warnings.
+ */
+function getAuthConfig(req, res) {
+  const googleClientId = process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || '';
+  return res.status(200).json({
+    success: true,
+    data: {
+      googleClientId
+    }
+  });
+}
+
 module.exports = {
   register,
   login,
@@ -518,6 +533,7 @@ module.exports = {
   me,
   forgotPassword,
   resetPassword,
-  googleAuth
+  googleAuth,
+  getAuthConfig
 };
 

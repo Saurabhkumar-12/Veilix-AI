@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { SplineScene } from '@/components/ui/splite';
 import { Spotlight } from '@/components/ui/spotlight';
-import { loginApi, registerApi, forgotPasswordApi, googleAuthApi, getMeApi } from '../services/api';
+import { loginApi, registerApi, forgotPasswordApi, googleAuthApi, getMeApi, getAuthConfigApi } from '../services/api';
 
 export default function LoginPage({ onBack, onLoginSuccess }) {
   const [mode, setMode] = useState('login'); // 'login' | 'register' | 'forgot'
@@ -15,6 +15,7 @@ export default function LoginPage({ onBack, onLoginSuccess }) {
   const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [configClientId, setConfigClientId] = useState('');
   
   // Bot Interaction State: 'IDLE' | 'EMAIL_FOCUS' | 'PASSWORD_FOCUS' | 'LOADING' | 'SUCCESS' | 'ERROR'
   const [botState, setBotState] = useState('IDLE');
@@ -22,7 +23,7 @@ export default function LoginPage({ onBack, onLoginSuccess }) {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null); // { type: 'error' | 'success', text: string }
 
-  // Check if already authenticated on mount
+  // Check if already authenticated on mount & load dynamic auth config
   useEffect(() => {
     let isMounted = true;
     getMeApi().then(user => {
@@ -30,6 +31,13 @@ export default function LoginPage({ onBack, onLoginSuccess }) {
         // user already authenticated
       }
     }).catch(() => {});
+
+    getAuthConfigApi().then(cfg => {
+      if (isMounted && cfg?.googleClientId) {
+        setConfigClientId(cfg.googleClientId);
+      }
+    }).catch(() => {});
+
     return () => { isMounted = false; };
   }, [onLoginSuccess]);
 
@@ -131,12 +139,22 @@ export default function LoginPage({ onBack, onLoginSuccess }) {
   const handleGoogleAuth = async () => {
     if (isLoading || isGoogleLoading) return;
 
-    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+    let googleClientId = configClientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
+    if (!googleClientId) {
+      try {
+        const cfg = await getAuthConfigApi();
+        if (cfg?.googleClientId) {
+          googleClientId = cfg.googleClientId;
+          setConfigClientId(cfg.googleClientId);
+        }
+      } catch (e) {}
+    }
 
     if (!googleClientId) {
       setStatusMessage({ 
         type: 'error', 
-        text: 'Google OAuth Client ID is not configured. Please set VITE_GOOGLE_CLIENT_ID in your environment.' 
+        text: 'Google OAuth Client ID is not configured. Please set GOOGLE_CLIENT_ID in your environment.' 
       });
       setBotState('ERROR');
       setTimeout(() => setBotState('IDLE'), 4000);

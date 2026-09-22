@@ -7,10 +7,12 @@ const {
   me, 
   forgotPassword, 
   resetPassword,
-  googleAuth 
+  googleAuth,
+  getAuthConfig
 } = require('../controllers/authController');
 const { requireAuth, checkLoginLockout } = require('../middleware/authMiddleware');
 
+router.get('/config', getAuthConfig);
 router.post('/register', register);
 router.post('/login', checkLoginLockout, login);
 router.post('/logout', logout);
