@@ -1,6 +1,6 @@
 const rawGplay = require('google-play-scraper');
 const gplay = rawGplay.default || rawGplay;
-
+const { normalizeApplicationMetadata } = require('./metadataNormalizer');
 
 // Built-in fallback data for popular demo apps for instant sub-second response times
 const DEMO_FALLBACK_APPS = {
@@ -182,10 +182,16 @@ async function scrapeAppDetails(playStoreUrl) {
     throw error;
   }
 
-  // Fast-Path: Instant return for popular demo apps
+  // Fast-Path: Instant return for popular demo apps (routed through normalizer)
   if (DEMO_FALLBACK_APPS[appId]) {
     console.log(`[Scraper Fast-Path] Instant metadata return for "${appId}"`);
-    return DEMO_FALLBACK_APPS[appId];
+    return normalizeApplicationMetadata({
+      ...DEMO_FALLBACK_APPS[appId],
+      id: appId,
+      packageName: appId,
+      source: 'Demo dataset',
+      sourceUrl: playStoreUrl
+    });
   }
 
   try {
@@ -208,24 +214,45 @@ async function scrapeAppDetails(playStoreUrl) {
     }
 
     if (permissions.length === 0) {
-      // No permissions returned by Play Store API — do not substitute generic defaults.
-      // Log clearly so we can diagnose; an empty permission set is honest.
       console.warn(`[Scraper] No permissions returned for ${appId} — returning empty set.`);
     }
 
-    return {
+    // Pass the raw result through the canonical normalizer
+    return normalizeApplicationMetadata({
+      id: appId,
       name: appData.title || titleFromPackageId(appId),
+      packageName: appId,
       developer: appData.developer || 'Android Application',
-      category: appData.genre || 'General',
+      version: appData.version || '1.0.0',
       description: appData.description || appData.summary || '',
-      rating: typeof appData.score === 'number' ? Math.round(appData.score * 10) / 10 : 4.2,
+      platform: 'Google Play',
+      permissions: permissions,
+      source: 'Google Play Store',
+      sourceUrl: playStoreUrl,
+      rating: typeof appData.score === 'number' ? appData.score : 4.2,
       installs: appData.installs || '500K+',
-      icon: appData.icon || '',
-      permissions
-    };
+      icon: appData.icon || ''
+    });
   } catch (err) {
-    const error = new Error(`Unable to verify live application metadata (${err.message}). Try again or choose a clearly labelled demo dataset.`);
-    error.statusCode = 503;
+    let statusCode = 503;
+    let message = err.message || 'Scraper request failed';
+
+    if (err.message.includes('not found') || err.message.includes('404')) {
+      statusCode = 404;
+      message = 'Application not found on Google Play Store';
+    } else if (err.message.includes('timeout')) {
+      statusCode = 504;
+      message = 'Request timed out while fetching Play Store data';
+    } else if (err.message.includes('429')) {
+      statusCode = 429;
+      message = 'Too many requests. Play Store rate limit reached';
+    } else if (err.message.includes('500') || err.message.includes('502') || err.message.includes('503')) {
+      statusCode = 502;
+      message = 'Play Store upstream service error';
+    }
+
+    const error = new Error(`Unable to verify live application metadata (${message}). Try again or choose a clearly labelled demo dataset.`);
+    error.statusCode = statusCode;
     throw error;
   }
 }

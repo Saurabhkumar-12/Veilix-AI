@@ -24,7 +24,11 @@ function requireAuth(req, res, next) {
 
   if (!token) {
     return res.status(401).json({
-      error: true,
+      success: false,
+      error: {
+        code: 'AUTHENTICATION_REQUIRED',
+        message: 'Authentication required. Please log in to access this security workspace.'
+      },
       message: 'Authentication required. Please log in to access this security workspace.'
     });
   }
@@ -32,7 +36,11 @@ function requireAuth(req, res, next) {
   const decoded = verifyToken(token);
   if (!decoded) {
     return res.status(401).json({
-      error: true,
+      success: false,
+      error: {
+        code: 'INVALID_SESSION',
+        message: 'Session expired or invalid token. Please log in again.'
+      },
       message: 'Session expired or invalid token. Please log in again.'
     });
   }
@@ -51,9 +59,16 @@ function checkLoginLockout(req, res, next) {
   if (email) {
     const status = getLockoutStatus(ip, email);
     if (status.isLocked) {
+      const waitTime = Math.ceil(status.remainingSeconds / 60);
+      const msg = `Too many failed login attempts. Account temporarily locked for security. Please try again in ${waitTime} minute(s).`;
       return res.status(429).json({
-        error: true,
-        message: `Too many failed login attempts. Account temporarily locked for security. Please try again in ${Math.ceil(status.remainingSeconds / 60)} minute(s).`
+        success: false,
+        error: {
+          code: 'ACCOUNT_LOCKED',
+          message: msg,
+          remainingSeconds: status.remainingSeconds
+        },
+        message: msg
       });
     }
   }

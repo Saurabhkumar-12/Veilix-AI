@@ -26,22 +26,54 @@ app.use(cookieParser());
 // Rate Limiting Middleware
 const requestWindows = new Map();
 app.use('/api', (req, res, next) => {
-  const key = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+  // Allow health checks and auth status checks without strict rate limiting
+  if (req.path === '/health' || req.path === '/auth/me') return next();
+
+  const ip = req.ip || req.headers['x-forwarded-for'] || '127.0.0.1';
+  const isLocal = ip === '::1' || ip === '127.0.0.1' || ip === '::ffff:127.0.0.1' || ip === 'localhost';
   const now = Date.now();
-  const record = requestWindows.get(key) || { started: now, count: 0 };
-  if (now - record.started > 60_000) { record.started = now; record.count = 0; }
+
+  // Prune map if excessively large
+  if (requestWindows.size > 1000) {
+    const oldestKey = requestWindows.keys().next().value;
+    requestWindows.delete(oldestKey);
+  }
+
+  const record = requestWindows.get(ip) || { started: now, count: 0 };
+  if (now - record.started > 60_000) { 
+    record.started = now; 
+    record.count = 0; 
+  }
   record.count += 1;
-  requestWindows.set(key, record);
-  if (record.count > Number(process.env.RATE_LIMIT_PER_MINUTE || 60)) {
-    return res.status(429).json({ error: true, message: 'Too many requests. Please retry in a minute.' });
+  requestWindows.set(ip, record);
+
+  const configuredLimit = Number(process.env.RATE_LIMIT_PER_MINUTE || 2000);
+  const limit = isLocal ? Math.max(configuredLimit, 5000) : configuredLimit;
+
+  if (record.count > limit) {
+    return res.status(429).json({ 
+      success: false, 
+      error: { 
+        code: 'RATE_LIMIT_EXCEEDED', 
+        message: 'Too many requests. Please wait a moment and try again.' 
+      },
+      message: 'Too many requests. Please wait a moment and try again.' 
+    });
   }
   next();
 });
 
-// Enable CORS for frontend dev server & production
-const corsOrigin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+// Enable CORS for frontend dev servers & production
+const configuredCors = process.env.CORS_ORIGIN;
 app.use(cors({ 
-  origin: corsOrigin,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (!configuredCors || origin === configuredCors || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, origin);
+  },
   credentials: true 
 }));
 
@@ -51,8 +83,8 @@ app.use((req, res, next) => {
   next(); 
 });
 
-// Parse JSON request bodies
-app.use(express.json({ limit: '32kb' }));
+// Parse JSON request bodies (supports multi-version app comparison payloads)
+app.use(express.json({ limit: process.env.MAX_JSON_LIMIT || '5mb' }));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -79,8 +111,11 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error('[Server Uncaught Error]:', err.stack || err.message);
   res.status(err.statusCode || 500).json({
-    error: true,
-    message: 'Unable to complete request.'
+    success: false,
+    error: {
+      code: err.code || 'INTERNAL_SERVER_ERROR',
+      message: err.message || 'Unable to complete request.'
+    }
   });
 });
 

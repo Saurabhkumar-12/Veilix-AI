@@ -31,6 +31,7 @@ const { getPermissionMeta }                       = require('../backend/risk-eng
 const { assess, permissionRisk }                  = require('./securityAssessmentService');
 const { collectEvidence }                         = require('./evidenceCollector');
 const { analyzePermissionsWithAI, classificationToRecommendation } = require('./aiService');
+const { normalizeApplicationMetadata } = require('./metadataNormalizer');
 
 const scanHistory = new Map();
 
@@ -120,23 +121,57 @@ function sdkSignals(description = '') {
  * @returns {Promise<object>} - Full analysis report
  */
 async function analyze(app, { demo = false } = {}) {
-  const uniquePerms = [...new Set((app.permissions || []).map(p => {
-    if (typeof p === 'string') return p.trim();
-    return (p.permission || p.permissionId || '').trim();
-  }))].filter(Boolean);
+  // Normalize incoming application metadata at the boundary
+  const canonicalApp = normalizeApplicationMetadata({ ...app, demo });
+
+  // Handle unavailable or malformed permissions as insufficient evidence
+  if (canonicalApp.permissionsStatus === 'unavailable' || canonicalApp.permissionsStatus === 'malformed') {
+    const report = {
+      id:          canonicalApp.id,
+      name:        canonicalApp.name,
+      developer:   canonicalApp.developer,
+      category:    canonicalApp.categories[0] || 'Utility',
+      description: canonicalApp.description,
+      rating:      canonicalApp.rating,
+      installs:    canonicalApp.installs,
+      icon:        canonicalApp.icon,
+      analyzedAt:  new Date().toISOString(),
+      dataSource:  canonicalApp.source,
+      demo:        canonicalApp.source === 'Demo dataset',
+      privacyScore: 0,
+      overallRisk:  'Unknown Risk',
+      summary:      'Insufficient evidence to perform privacy analysis. Application permissions list is unavailable or malformed.',
+      analysisStatus: 'insufficient_evidence',
+      metadataStatus: 'unverified',
+      permissionsStatus: canonicalApp.permissionsStatus,
+      counts: { total: 0, required: 0, optional: 0, excessive: 0, review: 0 },
+      permissions: [],
+      minimumPermissionSet: [],
+      exposureReduction: 0,
+      riskBreakdown: { permissionExposure: 0, dataSensitivity: 0, purposeAlignment: 100, excessiveAccess: 0 },
+      attackSurface: { sensitivePermissions: 0, potentiallyExcessive: 0, backgroundAccess: 0, thirdPartySdks: 0, exposureLevel: 0 },
+      sdkSignals: [],
+      methodology: 'Analysis aborted. No valid permission list was provided.',
+      limitations: 'No permissions were extracted. Ensure you provide a valid Play Store app or a valid APK file.',
+    };
+    return { ...report, securityAssessment: assess(report) };
+  }
+
+  const uniquePerms = [...new Set(canonicalApp.permissions)];
 
   // ── Step 1: Risk engine for overall score & verdict ───────────────────────
-  const riskResult = fallbackAnalysis(app.category, uniquePerms, {
-    appName: app.name, developer: app.developer,
-    installs: app.installs, score: app.rating,
-    description: app.description,
+  const riskResult = fallbackAnalysis(canonicalApp.categories[0] || 'Utility', uniquePerms, {
+    appName: canonicalApp.name, developer: canonicalApp.developer,
+    installs: canonicalApp.installs, score: canonicalApp.rating,
+    description: canonicalApp.description,
   });
 
   // ── Step 2: Collect backend evidence bundle ───────────────────────────────
   const evidenceBundle = collectEvidence({
-    ...app,
+    ...canonicalApp,
+    category: canonicalApp.categories[0] || 'Utility',
     permissions: uniquePerms,
-    packageId: app.packageId || app.historyId || null,
+    packageId: canonicalApp.packageName || null,
   });
 
   // ── Step 3: AI analysis over evidence ────────────────────────────────────
@@ -233,22 +268,24 @@ async function analyze(app, { demo = false } = {}) {
     sensitive * 18 +
     counts.excessive * 25 +
     permissions.filter(p => p.id.includes('BACKGROUND')).length * 14 +
-    sdkSignals(app.description).length * 5
+    sdkSignals(canonicalApp.description).length * 5
   ));
 
   // ── Step 6: Assemble report ───────────────────────────────────────────────
   const report = {
-    id:          app.packageId || app.historyId || app.name.toLowerCase().replace(/\W+/g, '-'),
-    name:        app.name,
-    developer:   app.developer,
+    id:          canonicalApp.id,
+    name:        canonicalApp.name,
+    developer:   canonicalApp.developer,
     category:    riskResult.category,
-    description: app.description || '',
-    rating:      app.rating,
-    installs:    app.installs,
-    icon:        app.icon || '',
+    description: canonicalApp.description,
+    rating:      canonicalApp.rating,
+    installs:    canonicalApp.installs,
+    icon:        canonicalApp.icon,
     analyzedAt:  new Date().toISOString(),
-    dataSource:  demo ? 'Demo dataset' : 'Google Play metadata',
+    dataSource:  canonicalApp.source,
     demo,
+    metadataStatus: canonicalApp.metadataStatus,
+    permissionsStatus: canonicalApp.permissionsStatus,
 
     // Risk summary (from risk engine)
     privacyScore: riskResult.riskScore,
@@ -273,10 +310,10 @@ async function analyze(app, { demo = false } = {}) {
       sensitivePermissions: sensitive,
       potentiallyExcessive: counts.excessive,
       backgroundAccess:     permissions.filter(p => p.id.includes('BACKGROUND')).length,
-      thirdPartySdks:       sdkSignals(app.description).length,
+      thirdPartySdks:       sdkSignals(canonicalApp.description).length,
       exposureLevel:        surface,
     },
-    sdkSignals: sdkSignals(app.description),
+    sdkSignals: sdkSignals(canonicalApp.description),
 
     // Transparency
     methodology:  aiResults.some(r => r.source === 'gemini-ai')

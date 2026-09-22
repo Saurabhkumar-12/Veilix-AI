@@ -10,10 +10,16 @@
     "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^2.0.55",
     "axios": "^1.7.9",
+    "clsx": "^2.1.1",
+    "framer-motion": "^13.4.0",
     "lucide-react": "^1.27.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.4",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

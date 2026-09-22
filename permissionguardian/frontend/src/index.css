@@ -26,6 +26,18 @@ body {
   letter-spacing: -0.01em;
 }
 
+/* Accessibility: Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: 'Space Grotesk', 'Inter', sans-serif;
   letter-spacing: -0.02em;
@@ -70,10 +82,10 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   background-color: var(--btn-hover);
 }
 
-/* Status Cards - High Contrast on White */
+/* Status Cards - High Contrast Dark Surfaces */
 .perm-card-required {
-  background-color: #F0FDF4;
-  border: 1px solid #BBF7D0;
+  background-color: rgba(34, 197, 94, 0.06);
+  border: 1px solid rgba(34, 197, 94, 0.25);
   border-left: 4px solid var(--color-required);
   border-radius: 0.875rem;
   color: var(--text-primary);
@@ -81,13 +93,13 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .perm-card-required:hover {
-  border-color: #86EFAC;
-  box-shadow: 0 4px 6px -1px rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.5);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15);
 }
 
 .perm-card-optional {
-  background-color: #FFFBEB;
-  border: 1px solid #FDE68A;
+  background-color: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.25);
   border-left: 4px solid var(--color-optional);
   border-radius: 0.875rem;
   color: var(--text-primary);
@@ -95,13 +107,13 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .perm-card-optional:hover {
-  border-color: #FCD34D;
-  box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
 }
 
 .perm-card-unnecessary {
-  background-color: #FEF2F2;
-  border: 1px solid #FECDD3;
+  background-color: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   border-left: 4px solid var(--color-unnecessary);
   border-radius: 0.875rem;
   color: var(--text-primary);
@@ -109,8 +121,8 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .perm-card-unnecessary:hover {
-  border-color: #FDA4AF;
-  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
 }
 
 /* Radar & Scanning Animations */
@@ -211,11 +223,14 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 /* ── App Info Card ── */
+/* ── App Info Card ── */
 .results-app-card {
-  background: #fff;
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(16px);
 }
 .results-app-card__inner {
   display: flex;
@@ -231,15 +246,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   height: 80px;
   border-radius: 1rem;
   object-fit: cover;
-  border: 1px solid #E5E7EB;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 .results-app-card__icon-placeholder {
   width: 80px;
   height: 80px;
   border-radius: 1rem;
-  background: #F1F5F9;
-  border: 1px solid #E5E7EB;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,7 +262,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .results-app-card__icon-svg {
   width: 38px;
   height: 38px;
-  color: #34D399;
+  color: #a855f7;
 }
 .results-app-card__info {
   flex: 1;
@@ -257,7 +272,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.1em;
-  color: #16A34A;
+  color: #c084fc;
   text-transform: uppercase;
   margin: 0 0 0.3rem;
   font-family: 'Space Grotesk', sans-serif;
@@ -266,16 +281,15 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
-  color: #111827;
+  color: #ffffff;
   letter-spacing: -0.03em;
   line-height: 1.2;
   margin: 0 0 0.4rem;
 }
 .results-app-card__desc {
   font-size: 0.875rem;
-  color: #4B5563;
-  font-style: italic;
-  line-height: 1.5;
+  color: #94a3b8;
+  line-height: 1.6;
   margin: 0 0 0.85rem;
 }
 .results-app-card__meta {
@@ -290,21 +304,21 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   gap: 0.3rem;
   font-size: 0.78rem;
   font-weight: 600;
-  color: #374151;
-  background: #F3F4F6;
-  border: 1px solid #E5E7EB;
+  color: #e2e8f0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
   padding: 0.25rem 0.7rem;
 }
 .results-meta-pill--star {
-  background: #FFFBEB;
-  border-color: #FDE68A;
-  color: #92400E;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
 }
 .results-meta-pill__icon {
   width: 0.85rem;
   height: 0.85rem;
-  color: #16A34A;
+  color: #a855f7;
   flex-shrink: 0;
 }
 .results-meta-pill__icon--star {
@@ -481,36 +495,33 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   }
 }
 
-/* ── Permission Card v2 (compact, light) ── */
+/* ── Permission Card v2 (compact, dark high-tech) ── */
 .perm-card-v2 {
-  background: #fff;
+  background: #000000;
   border-radius: 0.75rem;
   padding: 0.875rem 1rem;
-  border: 1px solid #E5E7EB;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-left-width: 4px;
-  transition: box-shadow 0.2s ease, transform 0.15s ease;
+  transition: box-shadow 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
 }
 .perm-card-v2:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 .perm-card-v2--required {
-  border-left-color: #34D399;
-  background: #F0FDF4;
-  border-color: #BBF7D0;
-  border-left-color: #34D399;
+  background: rgba(34, 197, 94, 0.04);
+  border-color: rgba(34, 197, 94, 0.25);
+  border-left-color: #22c55e;
 }
 .perm-card-v2--optional {
-  border-left-color: #F59E0B;
-  background: #FFFBEB;
-  border-color: #FDE68A;
-  border-left-color: #F59E0B;
+  background: rgba(245, 158, 11, 0.04);
+  border-color: rgba(245, 158, 11, 0.25);
+  border-left-color: #f59e0b;
 }
 .perm-card-v2--unnecessary {
-  border-left-color: #EF4444;
-  background: #FFF5F5;
-  border-color: #FECDD3;
-  border-left-color: #EF4444;
+  background: rgba(239, 68, 68, 0.04);
+  border-color: rgba(239, 68, 68, 0.25);
+  border-left-color: #ef4444;
 }
 .perm-card-v2__header {
   display: flex;
@@ -523,27 +534,27 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   height: 1rem;
   flex-shrink: 0;
 }
-.perm-card-v2__icon--required    { color: #16A34A; }
-.perm-card-v2__icon--optional    { color: #D97706; }
-.perm-card-v2__icon--unnecessary { color: #DC2626; }
+.perm-card-v2__icon--required    { color: #4ade80; }
+.perm-card-v2__icon--optional    { color: #fbbf24; }
+.perm-card-v2__icon--unnecessary { color: #f87171; }
 .perm-card-v2__name {
   font-family: 'Space Grotesk', sans-serif;
   font-size: 0.88rem;
   font-weight: 700;
-  color: #111827;
+  color: #f8fafc;
   letter-spacing: -0.01em;
   line-height: 1.3;
   margin: 0;
 }
 .perm-card-v2__reason {
   font-size: 0.78rem;
-  color: #4B5563;
+  color: #94a3b8;
   line-height: 1.5;
   margin: 0;
 }
 .perm-card-v2__reason-label {
   font-weight: 600;
-  color: #374151;
+  color: #cbd5e1;
 }
 
 /* ── Recommendation badge (YES/NO label inside card) ── */
@@ -559,25 +570,25 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   flex-shrink: 0;
 }
 .perm-card-v2__rec-badge--required {
-  background: rgba(22,163,74,0.12);
-  color: #166534;
-  border: 1px solid rgba(22,163,74,0.25);
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 .perm-card-v2__rec-badge--optional {
-  background: rgba(217,119,6,0.12);
-  color: #92400E;
-  border: 1px solid rgba(217,119,6,0.25);
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 .perm-card-v2__rec-badge--unnecessary {
-  background: rgba(220,38,38,0.1);
-  color: #991B1B;
-  border: 1px solid rgba(220,38,38,0.2);
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 /* ── Factual "what it does" — from knowledge base, not AI ── */
 .perm-card-v2__what-it-does {
   font-size: 0.76rem;
-  color: #6B7280;
+  color: #94a3b8;
   line-height: 1.5;
   margin: 0 0 0.35rem;
   font-style: italic;
@@ -586,7 +597,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 /* ── Evidence section ── */
 .perm-card-v2__evidence-wrap {
   margin-top: 0.5rem;
-  border-top: 1px solid rgba(0,0,0,0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 0.45rem;
 }
 .perm-card-v2__evidence-toggle {
@@ -599,11 +610,11 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   padding: 0;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #6B7280;
+  color: #94a3b8;
   letter-spacing: 0.02em;
   transition: color 0.15s ease;
 }
-.perm-card-v2__evidence-toggle:hover { color: #374151; }
+.perm-card-v2__evidence-toggle:hover { color: #f8fafc; }
 .perm-card-v2__evidence-chevron {
   width: 0.7rem;
   height: 0.7rem;
@@ -621,14 +632,14 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   align-items: flex-start;
   gap: 0.4rem;
   font-size: 0.72rem;
-  color: #4B5563;
+  color: #94a3b8;
   line-height: 1.4;
 }
 .perm-card-v2__evidence-dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #9CA3AF;
+  background: #64748b;
   flex-shrink: 0;
   margin-top: 0.35rem;
 }
@@ -639,7 +650,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  border-top: 1px solid rgba(0,0,0,0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 0.45rem;
 }
 .perm-card-v2__source-link {
@@ -648,11 +659,11 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   gap: 0.2rem;
   font-size: 0.68rem;
   font-weight: 600;
-  color: #1D4ED8;
+  color: #38bdf8;
   text-decoration: none;
   transition: color 0.15s ease;
 }
-.perm-card-v2__source-link:hover { color: #1e40af; text-decoration: underline; }
+.perm-card-v2__source-link:hover { color: #7dd3fc; text-decoration: underline; }
 .perm-card-v2__source-icon {
   width: 0.6rem;
   height: 0.6rem;
@@ -1229,11 +1240,11 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 
 /* Card Simulated Denied State */
 .perm-card-v2--denied {
-  opacity: 0.65;
-  filter: grayscale(30%);
-  border-left-color: #64748B !important;
-  background: #F8FAFC !important;
-  border-color: #E2E8F0 !important;
+  opacity: 0.55;
+  filter: grayscale(60%);
+  border-left-color: #475569 !important;
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
   transition: all 0.25s ease;
 }
 .perm-card-v2--denied .perm-card-v2__name {
@@ -1245,7 +1256,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .perm-card-v2__sandbox-row {
   margin-top: 0.65rem;
   padding-top: 0.5rem;
-  border-top: 1px dashed #E2E8F0;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: flex-end;
 }
@@ -1255,14 +1266,14 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   gap: 0.4rem;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #475569;
+  color: #94a3b8;
   cursor: pointer;
   user-select: none;
 }
 .perm-card-v2__sandbox-checkbox {
   width: 0.85rem;
   height: 0.85rem;
-  accent-color: #67E8F9;
+  accent-color: #22c55e;
   cursor: pointer;
 }
 
@@ -1407,11 +1418,12 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .metrics-panel-card {
-  background: #1E293B;
-  border: 1px solid #334155;
+  background: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
 }
 
 .metrics-panel-card__header {

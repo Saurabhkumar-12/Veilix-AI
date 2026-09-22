@@ -185,6 +185,59 @@ async function runRegressionTests() {
   assert.equal(edgeReport.permissions[0].confidence, 45, 'Unknown permissions should have low confidence.');
   console.log('✅ Edge Case Tests Passed!');
 
+  // --- Test Case 10: Permissions Undefined/Null (Original Bug Regression) ---
+  console.log('\nTest 10: Permissions Undefined/Null (Original .length bug regression)');
+  
+  // Test undefined permissions
+  const undefReport = await analyze({
+    name: 'Undefined Perms App',
+    category: 'Utility'
+    // permissions is omitted (undefined)
+  });
+  
+  assert.equal(undefReport.analysisStatus, 'insufficient_evidence', 'Undefined permissions should result in insufficient evidence.');
+  assert.equal(undefReport.permissionsStatus, 'unavailable', 'permissionsStatus should be unavailable.');
+  assert.equal(undefReport.permissions.length, 0, 'Permissions array should be safe and empty.');
+
+  // Test null permissions
+  const nullReport = await analyze({
+    name: 'Null Perms App',
+    category: 'Utility',
+    permissions: null
+  });
+  
+  assert.equal(nullReport.analysisStatus, 'insufficient_evidence', 'Null permissions should result in insufficient evidence.');
+  assert.equal(nullReport.permissionsStatus, 'unavailable', 'permissionsStatus should be unavailable.');
+  assert.equal(nullReport.permissions.length, 0, 'Permissions array should be safe and empty.');
+  console.log('✅ Permissions Undefined/Null Regression Test Passed!');
+
+  // --- Test Case 11: Zod Optional Metadata Mapping ---
+  console.log('\nTest 11: Optional metadata property defaults');
+  const optionalReport = await analyze({
+    name: 'Minimal Application Properties App',
+    // Omit developer, version, description, rating, installs, icon
+    permissions: ['android.permission.VIBRATE']
+  });
+
+  assert.equal(optionalReport.developer, 'Android Application', 'Default developer should be mapped.');
+  assert.equal(optionalReport.description, '', 'Default description should be empty string.');
+  assert.equal(optionalReport.rating, 4.2, 'Default rating should be 4.2.');
+  assert.equal(optionalReport.installs, '100K+', 'Default installs should be 100K+.');
+  assert.equal(optionalReport.permissionsStatus, 'available', 'Permissions should be available.');
+  console.log('✅ Optional Metadata Defaults Test Passed!');
+
+  // --- Test Case 12: Normalizer validation exceptions ---
+  console.log('\nTest 12: Incomplete identity validation (name is empty)');
+  assert.throws(() => {
+    // Normalizer requires a non-empty name string
+    const { normalizeApplicationMetadata } = require('../../services/metadataNormalizer');
+    normalizeApplicationMetadata({
+      name: '',
+      permissions: []
+    });
+  }, /Canonical metadata schema validation failed/, 'Normalizer must throw a validation error for invalid name.');
+  console.log('✅ Normalizer Validation Exception Test Passed!');
+
   console.log('\n==================================================');
   console.log('ALL REGRESSION AND CORRECTNESS TESTS PASSED.');
   console.log('==================================================');

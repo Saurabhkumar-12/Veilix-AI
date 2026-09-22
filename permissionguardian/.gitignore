@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+package-lock.json.bak
+
+# Production Build
+dist/
+build/
+
+# Environment variables & secrets (NEVER commit)
+.env
+.env.local
+.env.*.local
+*.env
+!.env.example
+frontend/.env
+frontend/.env.local
+frontend/*.env
+!frontend/.env.example
+
+# Runtime data & Local User Store
+data/
+*.log
+logs/
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

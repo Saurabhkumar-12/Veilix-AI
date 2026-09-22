@@ -30,11 +30,11 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
   } = simulation;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6">
-      <div className="bg-[#0a0e1a] border border-[#1e293b] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto text-slate-200 font-sans">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 sm:p-6">
+      <div className="bg-[#030712] border border-white/10 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.9)] w-full max-w-4xl max-h-[90vh] overflow-y-auto text-slate-200 font-sans">
         
         {/* Header */}
-        <div className="sticky top-0 bg-[#050811] text-white p-5 sm:p-6 flex items-center justify-between z-10 border-b border-[#1e293b]">
+        <div className="sticky top-0 bg-[#000000]/90 backdrop-blur-md text-white p-5 sm:p-6 flex items-center justify-between z-10 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
               <Sword className="w-6 h-6" />
@@ -44,7 +44,7 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
                 <h2 className="font-heading font-extrabold text-lg sm:text-xl text-white tracking-tight">
                   ⚔️ Privacy Attack Simulator
                 </h2>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-rose-950/40 text-rose-350 border border-rose-900/30">
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-rose-950/40 text-rose-300 border border-rose-900/30">
                   SAFE SIMULATION
                 </span>
               </div>
@@ -54,7 +54,7 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors"
+            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors border border-white/10"
             title="Close Simulator"
           >
             <X className="w-5 h-5" />
@@ -64,25 +64,25 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
         <div className="p-6 space-y-6">
 
           {/* Non-invasive Notice */}
-          <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-900/30 text-amber-250 text-xs flex items-start gap-2.5">
-            <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+          <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 text-amber-200 text-xs flex items-start gap-2.5">
+            <Info className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               <strong>Non-Invasive Safety Guarantee:</strong> {staticNotice}
             </p>
           </div>
 
           {/* Top Score Banner */}
-          <div className="bg-slate-950 text-white rounded-2xl p-6 border border-[#1e293b] flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="bg-black/80 text-white rounded-2xl p-6 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div className="flex-1 text-center sm:text-left">
               <span className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
                 Simulated Attack Surface Score
               </span>
               <div className="flex items-baseline justify-center sm:justify-start gap-3 mt-1">
-                <span className="font-heading font-black text-4xl sm:text-5xl text-rose-450">
+                <span className="font-heading font-black text-4xl sm:text-5xl text-rose-400">
                   {attackSurfaceScore}
                 </span>
                 <span className="text-slate-400 text-lg">/ 100</span>
-                <span className={`text-xs font-bold px-3 py-1 rounded-full border ${severityBadgeStyles[attackSurfaceLevel]}`}>
+                <span className={`text-xs font-mono font-bold px-3 py-1 rounded-full border ${severityBadgeStyles[attackSurfaceLevel]}`}>
                   {attackSurfaceLevel} ATTACK SURFACE
                 </span>
               </div>
@@ -92,12 +92,12 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
             </div>
 
             {/* Score Gauge Visual */}
-            <div className="w-full sm:w-48 bg-[#03060c] p-3.5 rounded-xl border border-slate-800 text-xs space-y-2">
+            <div className="w-full sm:w-48 bg-black/60 p-3.5 rounded-xl border border-white/10 text-xs space-y-2">
               <div className="flex justify-between text-slate-300">
                 <span>Threat Exposure</span>
                 <span className="font-mono font-bold">{attackSurfaceScore}%</span>
               </div>
-              <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden">
+              <div className="w-full bg-black/90 h-2.5 rounded-full overflow-hidden border border-white/5">
                 <div 
                   className={`h-full ${severityBarColors[attackSurfaceLevel]}`} 
                   style={{ width: `${attackSurfaceScore}%` }}
@@ -111,9 +111,9 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
           </div>
 
           {/* AI Cautious Explanation */}
-          <div className="p-5 rounded-2xl bg-[#03060c] border border-slate-800">
+          <div className="p-5 rounded-2xl bg-black/80 border border-white/10">
             <div className="flex items-center gap-2 mb-2">
-              <Shield className="w-4 h-4 text-green-400" />
+              <Shield className="w-4 h-4 text-purple-400" />
               <h3 className="font-heading font-bold text-sm text-white">
                 AI Attack Surface Assessment
               </h3>
@@ -125,10 +125,10 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
 
           {/* Impact Chart */}
           {chartData.length > 0 && (
-            <div className="p-5 rounded-2xl bg-[#03060c] border border-slate-800">
+            <div className="p-5 rounded-2xl bg-black/80 border border-white/10">
               <h3 className="font-heading font-bold text-sm text-white mb-4 flex items-center justify-between">
                 <span>Potential Privacy Impact by Permission</span>
-                <span className="text-xs font-mono font-normal text-slate-505">Deterministic Risk Engine Data</span>
+                <span className="text-xs font-mono font-normal text-slate-400">Deterministic Risk Engine Data</span>
               </h3>
 
               <div className="space-y-3">
@@ -138,7 +138,7 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
                       <span className="font-bold">{item.permission}</span>
                       <span className="font-mono font-bold">{item.impactScore} / 100 ({item.severity})</span>
                     </div>
-                    <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+                    <div className="w-full bg-black/90 h-2.5 rounded-full overflow-hidden border border-white/10">
                       <div 
                         className={`h-full ${severityBarColors[item.severity] || 'bg-emerald-500'}`}
                         style={{ width: `${item.impactScore}%` }}
@@ -152,17 +152,17 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
 
           {/* Visual Scenario Flows */}
           {scenarios.length > 0 && (
-            <div className="p-5 rounded-2xl bg-slate-950 text-white border border-[#1e293b]">
+            <div className="p-5 rounded-2xl bg-black/80 text-white border border-white/10">
               <h3 className="font-heading font-bold text-sm text-white mb-4">
                 Visual Threat Exposure Flow
               </h3>
               
               <div className="space-y-3">
                 {scenarios.slice(0, 4).map((sc) => (
-                  <div key={`${sc.appName}-${sc.permission}`} className="p-3.5 rounded-xl bg-[#03060c] border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono">
-                    <span className="font-bold text-green-400 shrink-0">{sc.appName}</span>
+                  <div key={`${sc.appName}-${sc.permission}`} className="p-3.5 rounded-xl bg-black/60 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono">
+                    <span className="font-bold text-emerald-400 shrink-0">{sc.appName}</span>
                     <ArrowRight className="w-3.5 h-3.5 text-slate-500 hidden sm:block" />
-                    <span className="text-amber-300 font-bold bg-slate-900 px-2.5 py-1 rounded border border-slate-700">{sc.permission}</span>
+                    <span className="text-amber-300 font-bold bg-white/5 px-2.5 py-1 rounded border border-white/10">{sc.permission}</span>
                     <ArrowRight className="w-3.5 h-3.5 text-slate-500 hidden sm:block" />
                     <span className="text-rose-300 font-semibold">{sc.potentialExposure}</span>
                     <ArrowRight className="w-3.5 h-3.5 text-slate-500 hidden sm:block" />
@@ -183,16 +183,16 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
 
             <div className="grid grid-cols-1 gap-4">
               {impacts.map((imp) => (
-                <div key={imp.permission} className="p-4 rounded-xl border border-slate-800 bg-[#03060c] hover:bg-[#070b14] transition-colors space-y-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-2">
+                <div key={imp.permission} className="p-4 rounded-xl border border-white/10 bg-black/80 hover:border-white/20 transition-colors space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-2">
                     <div className="flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />
+                      <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
                       <h4 className="font-heading font-bold text-sm text-white">
                         {imp.permission}
                       </h4>
-                      <span className="text-xs text-slate-500 font-mono">({imp.potentialImpact})</span>
+                      <span className="text-xs text-slate-400 font-mono">({imp.potentialImpact})</span>
                     </div>
-                    <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border self-start sm:self-auto ${severityBadgeStyles[imp.severity]}`}>
+                    <span className={`text-[11px] font-mono font-bold px-2.5 py-0.5 rounded-full border self-start sm:self-auto ${severityBadgeStyles[imp.severity]}`}>
                       {imp.severity} SEVERITY
                     </span>
                   </div>
@@ -203,8 +203,8 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
                   <p className="text-xs text-slate-400 leading-relaxed">
                     <strong>Why It Matters:</strong> {imp.whyItMatters}
                   </p>
-                  <div className="text-xs text-green-400 bg-green-950/20 p-2.5 rounded-lg border border-green-900/25 flex items-start gap-1.5 mt-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                  <div className="text-xs text-emerald-400 bg-emerald-950/20 p-2.5 rounded-lg border border-emerald-500/20 flex items-start gap-1.5 mt-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                     <span><strong>Recommended Protection:</strong> {imp.recommendedProtection}</span>
                   </div>
                 </div>
@@ -215,10 +215,10 @@ export default function AttackSimulatorModal({ simulation, onClose }) {
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-[#050811] border-t border-slate-800 text-right">
+        <div className="p-4 bg-[#000000]/90 border-t border-white/10 text-right">
           <button
             onClick={onClose}
-            className="border border-[#1e293b] hover:border-slate-650 bg-[#090d16] text-slate-350 px-6 py-2.5 text-xs tracking-wider uppercase transition-all rounded-sm"
+            className="border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-slate-200 px-6 py-2.5 text-xs font-mono font-bold tracking-wider uppercase transition-all rounded-xl"
           >
             Close Simulator
           </button>

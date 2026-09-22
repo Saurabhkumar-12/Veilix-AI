@@ -20,13 +20,13 @@ router.post('/analyze/url', analyzeUrl);
 router.post('/analyze/apk', express.raw({ type: ['application/vnd.android.package-archive', 'application/octet-stream', 'application/zip'], limit: process.env.MAX_APK_BYTES || '20mb' }), analyzeApk);
 
 // Feature 1: Privacy Attack Simulator Routes
-router.post('/simulate/privacy-impact', express.json(), simulateImpact);
+router.post('/simulate/privacy-impact', simulateImpact);
 router.get('/analysis/:id/attack-simulation', simulateImpact);
 
 // Feature 2: Permission Time Machine Comparison Routes
-router.post('/compare', express.json(), compare);
-router.post('/compare/permissions', express.json(), compare);
-router.post('/compare/versions', express.json(), compare);
+router.post('/compare', compare);
+router.post('/compare/permissions', compare);
+router.post('/compare/versions', compare);
 
 // General Analysis & Assistant Routes
 router.get('/analysis/:id', getAnalysis);

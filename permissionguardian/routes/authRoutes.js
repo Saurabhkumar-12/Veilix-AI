@@ -6,7 +6,8 @@ const {
   logout, 
   me, 
   forgotPassword, 
-  resetPassword 
+  resetPassword,
+  googleAuth 
 } = require('../controllers/authController');
 const { requireAuth, checkLoginLockout } = require('../middleware/authMiddleware');
 
@@ -16,5 +17,6 @@ router.post('/logout', logout);
 router.get('/me', requireAuth, me);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
+router.post('/google', googleAuth);
 
 module.exports = router;

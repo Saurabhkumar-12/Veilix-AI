@@ -50,10 +50,66 @@ function bucketPermissions(permissions) {
   return { required, optional, unnecessary };
 }
 
+// ─── App Summary Helper ────────────────────────────────────────────────────────
+
+function getAppSummary(data, maxLength = 360) {
+  if (!data) return '';
+
+  // 1. If an explicit concise summary or short description exists from backend/AI
+  if (data.summary && typeof data.summary === 'string' && data.summary.trim().length > 0) {
+    return data.summary.trim();
+  }
+  if (data.shortDescription && typeof data.shortDescription === 'string' && data.shortDescription.trim().length > 0) {
+    return data.shortDescription.trim();
+  }
+  if (data.aiSummary && typeof data.aiSummary === 'string' && data.aiSummary.trim().length > 0) {
+    return data.aiSummary.trim();
+  }
+
+  const raw = (data.description || '').trim();
+  if (!raw) return '';
+  if (raw.length <= maxLength) return raw;
+
+  // Clean raw description: remove excessive newline breaks, bullet asterisks, repeated spaces
+  const cleaned = raw
+    .replace(/[*#_~`]+/g, '')
+    .replace(/\r?\n+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (cleaned.length <= maxLength) return cleaned;
+
+  // Look for a clean sentence boundary (., !, ?) near maxLength
+  const sentenceSlice = cleaned.slice(0, maxLength);
+  const lastPeriod = Math.max(
+    sentenceSlice.lastIndexOf('. '),
+    sentenceSlice.lastIndexOf('! '),
+    sentenceSlice.lastIndexOf('? ')
+  );
+
+  if (lastPeriod > 140) {
+    return sentenceSlice.slice(0, lastPeriod + 1).trim();
+  }
+
+  // Fallback to word boundary
+  const lastSpace = sentenceSlice.lastIndexOf(' ');
+  if (lastSpace > 100) {
+    return sentenceSlice.slice(0, lastSpace).trim() + '...';
+  }
+
+  return sentenceSlice.trim() + '...';
+}
+
 // ─── App Info Card ─────────────────────────────────────────────────────────────
 
 function AppInfoCard({ data }) {
   const { name, icon, description, category, rating, installs } = data;
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const shortSummary = getAppSummary(data, 350);
+  const fullText = (description || '').trim();
+  const hasExpandableContent = fullText.length > 360 && fullText !== shortSummary;
+
   return (
     <div className="results-app-card">
       <div className="results-app-card__inner">
@@ -69,9 +125,35 @@ function AppInfoCard({ data }) {
         <div className="results-app-card__info">
           <p className="results-app-card__tag">TARGET APP</p>
           <h1 className="results-app-card__name">{name}</h1>
-          {description && (
-            <p className="results-app-card__desc">&ldquo;{description}&rdquo;</p>
+          
+          {(shortSummary || fullText) && (
+            <div className="mb-3">
+              <p className="results-app-card__desc text-xs sm:text-sm leading-relaxed text-slate-300">
+                &ldquo;{isExpanded ? fullText : shortSummary}&rdquo;
+              </p>
+              {hasExpandableContent && (
+                <button
+                  type="button"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="mt-1.5 text-[11px] font-mono font-semibold text-purple-400 hover:text-purple-300 transition-colors inline-flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-purple-400 rounded"
+                  aria-label={isExpanded ? 'Show shorter description' : 'Read full description'}
+                >
+                  {isExpanded ? (
+                    <>
+                      <span>Show less</span>
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    </>
+                  ) : (
+                    <>
+                      <span>Read more</span>
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
           )}
+
           <div className="results-app-card__meta">
             {category && (
               <span className="results-meta-pill">
